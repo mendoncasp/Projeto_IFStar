@@ -30,7 +30,7 @@ namespace IFStar.Negocios
             try
             {
                 //Verifica se já existe uma votação para o ano atual. OBS: No momento do desenvolvimento, o evento tem apenas uma edição por ano
-                DataTable dadosVotacao = VerificarVotacao(votacao.getAno(), conn);
+                DataTable dadosVotacao = VerificarVotacao(DateTime.Now.Year, conn);
                 if (dadosVotacao.Rows.Count > 0)
                     throw new Exception("Já existe uma Votação cadastrada para esse ano.");
 
@@ -52,7 +52,7 @@ namespace IFStar.Negocios
             string dsErro = string.Empty;
             SqlConnection conn = new SqlConnection(conexao.connectionString);
             DataTable dtDados = new DataTable();
-            int idVotacao = 0;
+            //int idVotacao = 0;
 
             try
             {
@@ -63,16 +63,16 @@ namespace IFStar.Negocios
                 throw new Exception("Falha ao estabelecer conexão com o Banco de Dados: " + ex.Message);
             }
 
-            idVotacao = votacao.idVotacao;
-            if (idVotacao == 0)
-                throw new Exception("Deve ser informado o número da Votação para consulta. Contate a equipe Técnica.");
+            //idVotacao = votacao.idVotacao; //Descontinuado
+            //if (idVotacao == 0)
+            //    throw new Exception("Deve ser informado o número da Votação para consulta.");
 
             try
             {
                 try
                 {
                     //Consultar dados da votação
-                    dtDados = ConsultarVotacao(idVotacao, conn);
+                    dtDados = VerificarVotacao(DateTime.Now.Year, conn);
                 }
                 catch (Exception ex)
                 {
@@ -89,6 +89,7 @@ namespace IFStar.Negocios
                     bool alterarHoraInicioFim = false;
                     bool alterarHoraInicio = false;
                     bool alterarHoraFim = false;
+                    bool horaInformada = (!string.IsNullOrEmpty(votacao.horaInicio) || !string.IsNullOrEmpty(votacao.horaInicio));
                     List<String> scriptUpdate = new List<String>();
 
                     DateTime dtVotacaoSistema = DateTime.Parse(dtDados.Rows[0]["dtVotacao"].ToString());
@@ -105,7 +106,7 @@ namespace IFStar.Negocios
                         #region Alterar Tema
                         if (!string.IsNullOrEmpty(votacao.dsTema))
                         {
-                            scriptUpdate.Add("UPDATE tbVotacao SET tema = '" + votacao.dsTema + "' WHERE idVotacao = " + idVotacao);
+                            scriptUpdate.Add("UPDATE tbVotacao SET tema = '" + votacao.dsTema + "' WHERE ano = " + DateTime.Now.Year);
                         }
                         #endregion
 
@@ -225,7 +226,7 @@ namespace IFStar.Negocios
                                 }
                             }
                         }
-                        else if (dtVotacaoAtual.Contains("01/01/0001") || votacao.dtVotacao.Date == dtVotacaoSistema.Date) //Alterar Horário
+                        else if ((dtVotacaoAtual.Contains("01/01/0001") && horaInformada) || (votacao.dtVotacao.Date == dtVotacaoSistema.Date && horaInformada)) //Alterar Horário
                         { //Se informar apenas o horário para alteração, a aplicação usará como base a data da votação que consta no Banco de Dados
                             if (dtVotacaoSistema.Date == DateTime.Now.Date) //Alterar horário de votação para hoje: precisa validar horário
                             {
@@ -298,34 +299,34 @@ namespace IFStar.Negocios
                         #region Scripts Alterar Data
                         if (alterarDataInicioFimVotacao)
                         {
-                            scriptUpdate.Add("UPDATE tbVotacao SET dtVotacao = '" + votacao.dtVotacao.Date + "', horaInicio = '" + votacao.horaInicio + "', horaFim = '" + votacao.horaFim + "' WHERE idVotacao = " + idVotacao);
+                            scriptUpdate.Add("UPDATE tbVotacao SET dtVotacao = '" + votacao.dtVotacao.Date + "', horaInicio = '" + votacao.horaInicio + "', horaFim = '" + votacao.horaFim + "' WHERE ano = " + DateTime.Now.Year);
                         }
                         else if (alterarDataInicioVotacao)
                         {
-                            scriptUpdate.Add("UPDATE tbVotacao SET dtVotacao = '" + votacao.dtVotacao.Date + "', horaInicio = '" + votacao.horaInicio + "' WHERE idVotacao = " + idVotacao);
+                            scriptUpdate.Add("UPDATE tbVotacao SET dtVotacao = '" + votacao.dtVotacao.Date + "', horaInicio = '" + votacao.horaInicio + "' WHERE ano = " + DateTime.Now.Year);
                         }
                         else if (alterarDataFimVotacao)
                         {
-                            scriptUpdate.Add("UPDATE tbVotacao SET dtVotacao = '" + votacao.dtVotacao.Date + "', horaFim = '" + votacao.horaFim + "' WHERE idVotacao = " + idVotacao);
+                            scriptUpdate.Add("UPDATE tbVotacao SET dtVotacao = '" + votacao.dtVotacao.Date + "', horaFim = '" + votacao.horaFim + "' WHERE ano = " + DateTime.Now.Year);
                         }
                         else if (alterarDataVotacao)
                         {
-                            scriptUpdate.Add("UPDATE tbVotacao SET dtVotacao = '" + votacao.dtVotacao.Date + "' WHERE idVotacao = " + idVotacao);
+                            scriptUpdate.Add("UPDATE tbVotacao SET dtVotacao = '" + votacao.dtVotacao.Date + "' WHERE ano = " + DateTime.Now.Year);
                         }
                         #endregion
 
                         #region Scripts Alterar Hora
                         if (alterarHoraInicioFim)
                         {
-                            scriptUpdate.Add("UPDATE tbVotacao SET horaInicio = '" + votacao.horaInicio + "', horaFim = '" + votacao.horaFim + "' WHERE idVotacao = " + idVotacao);
+                            scriptUpdate.Add("UPDATE tbVotacao SET horaInicio = '" + votacao.horaInicio + "', horaFim = '" + votacao.horaFim + "' WHERE ano = " + DateTime.Now.Year);
                         }
                         else if (alterarHoraInicio)
                         {
-                            scriptUpdate.Add("UPDATE tbVotacao SET horaInicio = '" + votacao.horaInicio + "' WHERE idVotacao = " + idVotacao);
+                            scriptUpdate.Add("UPDATE tbVotacao SET horaInicio = '" + votacao.horaInicio + "' WHERE ano = " + DateTime.Now.Year);
                         }
                         else if (alterarHoraFim)
                         {
-                            scriptUpdate.Add("UPDATE tbVotacao SET horaFim = '" + votacao.horaFim + "' WHERE idVotacao = " + idVotacao);
+                            scriptUpdate.Add("UPDATE tbVotacao SET horaFim = '" + votacao.horaFim + "' WHERE ano = " + DateTime.Now.Year);
                         }
                         #endregion
 
@@ -414,6 +415,7 @@ namespace IFStar.Negocios
                     retorno.dsHoraInicio = dtDados.Rows[0]["horaInicio"].ToString();
                     retorno.dsHoraFim = dtDados.Rows[0]["horaFim"].ToString();
                     retorno.flAberto = Boolean.Parse(dtDados.Rows[0]["flAberto"].ToString());
+                    retorno.flVotacaoEncerrada = Boolean.Parse(dtDados.Rows[0]["flVotacaoEncerrada"].ToString());
                 }
                 else if (dtDados.Rows.Count > 1)
                 {
@@ -532,8 +534,11 @@ namespace IFStar.Negocios
                     bool votacaoAberta = Boolean.Parse(dtDados.Rows[0]["flAberto"].ToString());
                     bool votacaoEncerrada = Boolean.Parse(dtDados.Rows[0]["flVotacaoEncerrada"].ToString());
 
-                    if (!votacaoAberta)
+                    if (!votacaoAberta && !votacaoEncerrada)
                         throw new Exception("Votação não está aberta.");
+
+                    if (votacaoEncerrada)
+                        throw new Exception("Votação já está encerrada.");
 
                     #region Encerrar Votação
                     string scriptUpdate = "UPDATE tbVotacao SET flAberto = 0, flVotacaoEncerrada = 1 WHERE ano = @ano";
@@ -555,6 +560,70 @@ namespace IFStar.Negocios
                     conn.Close();
 
                 dsErro = "Falha ao encerrar Votação: " + ex.Message;
+            }
+
+            conn.Close();
+            return dsErro;
+        }
+
+        public string ExcluirVotacao()
+        {
+            SqlConnection conn = new SqlConnection(conexao.connectionString);
+            DataTable dtDados = new DataTable();
+            string dsErro = string.Empty;
+
+            try
+            {
+                conn.Open();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Falha ao estabelecer conexão com o Banco de Dados: " + ex.Message);
+            }
+
+            try
+            {
+                try
+                {
+                    dtDados = VerificarVotacao(DateTime.Now.Year, conn);
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw new Exception("Falha ao realizar consulta no Banco de Dados: " + ex.Message);
+                }
+
+                if (dtDados.Rows.Count == 1)
+                {
+                    bool votacaoAberta = Boolean.Parse(dtDados.Rows[0]["flAberto"].ToString());
+                    bool votacaoEncerrada = Boolean.Parse(dtDados.Rows[0]["flVotacaoEncerrada"].ToString());
+
+                    if (votacaoAberta)
+                        throw new Exception("Votação Aberta. Não pode ser excluída!");
+
+                    if (votacaoEncerrada)
+                        throw new Exception("Votação Encerrada. Não pode ser excluída!");
+
+                    #region Encerrar Votação
+                    string scriptDelete = "DELETE FROM tbVotacao WHERE ano = @ano";
+
+                    SqlCommand cmd = new SqlCommand(scriptDelete, conn);
+                    cmd.Parameters.AddWithValue("@ano", DateTime.Now.Year);
+
+                    cmd.ExecuteNonQuery();
+                    #endregion
+                }
+                else if (dtDados.Rows.Count > 1)
+                {
+                    throw new Exception("Mais de uma votação encontrada. Contate a Equipe Técnica");
+                }
+            }
+            catch (Exception ex)
+            {
+                if (conn != null)
+                    conn.Close();
+
+                dsErro = "Falha ao excluir Votação: " + ex.Message;
             }
 
             conn.Close();
@@ -586,17 +655,16 @@ namespace IFStar.Negocios
         {
             string erro = string.Empty;
 
-            string scriptInsert = "INSERT INTO tbVotacao (tema, edicao, ano, dtVotacao, horaInicio, horaFim, idUserInsert) VALUES (@tema, @edicao, @ano, @dtVotacao, @horaInicio, @horaFim, @idUserInsert)";
+            string scriptInsert = "INSERT INTO tbVotacao (tema, edicao, ano, dtVotacao, horaInicio, horaFim) VALUES (@tema, @edicao, @ano, @dtVotacao, @horaInicio, @horaFim)";
 
             //Adicionar Parâmetros
             SqlCommand cmd = new SqlCommand(scriptInsert, conn);
             cmd.Parameters.AddWithValue("@tema", votacao.getTema());
-            cmd.Parameters.AddWithValue("@edicao", votacao.getEdicao());
-            cmd.Parameters.AddWithValue("@ano", votacao.getAno());
+            cmd.Parameters.AddWithValue("@edicao", 1);
+            cmd.Parameters.AddWithValue("@ano", DateTime.Now.Year);
             cmd.Parameters.AddWithValue("@dtVotacao", votacao.getDtVotacao());
             cmd.Parameters.AddWithValue("@horaInicio", votacao.getHoraInicio());
             cmd.Parameters.AddWithValue("@horaFim", votacao.getHoraFim());
-            cmd.Parameters.AddWithValue("@idUserInsert", votacao.getIdUserInsert());
 
             try
             {

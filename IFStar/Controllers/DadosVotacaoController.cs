@@ -6,9 +6,12 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace IFStar.Controllers
 {
+
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class DadosVotacaoController : ApiController
     {
         #region Campos
@@ -28,7 +31,7 @@ namespace IFStar.Controllers
                 parametro = param;
                 parametro.ValidarParamVotacao(parametro);
 
-                Votacao votacao = new Votacao(parametro.dsTema, parametro.nrEdicao, parametro.nrAno, parametro.dtVotacao, parametro.horaInicio, parametro.horaFim, parametro.idUserInsert);
+                Votacao votacao = new Votacao(parametro.dsTema, parametro.dtVotacao, parametro.horaInicio, parametro.horaFim);
 
                 GatewayDadosVotacao dados = new GatewayDadosVotacao();
                 dsErro = dados.AddVotacao(votacao);
@@ -101,6 +104,14 @@ namespace IFStar.Controllers
                 else if (tipoServico == 3) //Encerrar Votação
                 {
                     dsErro = dados.EncerrarVotacao();
+                    if (string.IsNullOrEmpty(dsErro))
+                        return Request.CreateResponse(HttpStatusCode.OK, dsErro);
+                    else
+                        return Request.CreateResponse(HttpStatusCode.InternalServerError, dsErro);
+                }
+                else if (tipoServico == 4) //Excluir Votação
+                {
+                    dsErro = dados.ExcluirVotacao();
                     if (string.IsNullOrEmpty(dsErro))
                         return Request.CreateResponse(HttpStatusCode.OK, dsErro);
                     else

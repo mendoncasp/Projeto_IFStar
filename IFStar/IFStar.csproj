@@ -225,6 +225,7 @@
     <Compile Include="Models\Usuario.cs" />
     <Compile Include="Models\Votacao.cs" />
     <Compile Include="Negocios\GatewayDadosParticipante.cs" />
+    <Compile Include="Negocios\GatewayDadosPublicoVotacao.cs" />
     <Compile Include="Negocios\GatewayDadosUsuario.cs" />
     <Compile Include="Negocios\GatewayDadosVotacao.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -7,24 +7,18 @@ namespace IFStar.Models
 {
     public class Votacao
     {
-        public Votacao(string tema, int edicao, int ano, DateTime dtVotacao, string horaInicio, string horaFim, int idUserInsert)
+        public Votacao(string tema, DateTime dtVotacao, string horaInicio, string horaFim)
         {
             this.tema = tema;
-            this.edicao = edicao;
-            this.ano = ano;
             this.dtVotacao = dtVotacao;
             this.horaInicio = horaInicio;
             this.horaFim = horaFim;
-            this.idUserInsert = idUserInsert;
         }
 
         private string tema { get; set; }
-        private int edicao { get; set; }
-        private int ano { get; set; }
         private DateTime dtVotacao { get; set; }
         private string horaInicio { get; set; }
         private string horaFim { get; set; }
-        private int idUserInsert { get; set; }
 
         public string getTema()
         {
@@ -34,26 +28,6 @@ namespace IFStar.Models
         public void setTema(string tema)
         {
             this.tema = tema;
-        }
-
-        public int getEdicao()
-        {
-            return edicao;
-        }
-
-        public void setEdicao(int edicao)
-        {
-            this.edicao = edicao;
-        }
-
-        public int getAno()
-        {
-            return ano;
-        }
-
-        public void setAno(int ano)
-        {
-            this.ano = ano;
         }
 
         public DateTime getDtVotacao()
@@ -86,14 +60,5 @@ namespace IFStar.Models
             this.horaFim = horaFim;
         }
 
-        public int getIdUserInsert()
-        {
-            return idUserInsert;
-        }
-
-        public void setIdUserInsert(int idUserInsert)
-        {
-            this.idUserInsert = idUserInsert;
-        }
     }
 }

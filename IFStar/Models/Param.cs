@@ -146,12 +146,9 @@ namespace IFStar.Models
     {
         public int idVotacao { get; set; }
         public string dsTema { get; set; }
-        public int nrEdicao { get; set; }
-        public int nrAno { get; set; }
         public DateTime dtVotacao { get; set; }
         public string horaInicio { get; set; }
         public string horaFim { get; set; }
-        public int idUserInsert { get; set; }
 
         #region Métodos
         #region Validar Param
@@ -160,21 +157,9 @@ namespace IFStar.Models
             if (string.IsNullOrEmpty(parametro.dsTema))
                 throw new Exception("É Obrigatório informar o Tema do evento.");
 
-            if (parametro.nrEdicao < 1)
-                throw new Exception("Deve ser informado um número de Edição maior ou igual a 1.");
-
-            int anoAtual = DateTime.Now.Year;
-            if (parametro.nrAno < anoAtual || parametro.nrAno > anoAtual)
-                throw new Exception("O ano do evento deve igual ao ano atual.");
-
             if (parametro.dtVotacao.Date < DateTime.Now.Date)
             {
                 throw new Exception("A data de iníco deve ser igual ou maior que a data atual.");
-            }
-            else
-            {
-                if (parametro.dtVotacao.Year > anoAtual)
-                    throw new Exception("O ano do evento deve ser igual ao ano atual [2].");
             }
 
             string[] horarioInicio = parametro.horaInicio.Trim().Split(':'); //Primeira posição: Horas; Segunda posição: Minutos
@@ -196,9 +181,25 @@ namespace IFStar.Models
             int periodoVotacao = Int32.Parse(horarioFim[0]) - Int32.Parse(horarioInicio[0]);
             if (periodoVotacao <= 5)
                 throw new Exception("Votação deve ter um período mínimo de 6 horas.");
+        }
+        #endregion
+        #endregion
+    }
 
-            if (parametro.idUserInsert == 0)
-                throw new Exception("Deve ser informado o usuário que está cadastrando a votação.");
+    public class ParamVoto
+    {
+        public int idUsuario { get; set; }
+        public string idParticipante { get; set; }
+
+        #region Métodos
+        #region Validar Param
+        public void ValidarParamVoto(ParamVoto parametro)
+        {
+            if (parametro.idUsuario == 0)
+                throw new Exception("É Obrigatório informar o Usuário que está votando");
+
+            if (string.IsNullOrEmpty(parametro.idParticipante))
+                throw new Exception("É Obrigatório informar o Participante que está recebendo o voto");
         }
         #endregion
         #endregion

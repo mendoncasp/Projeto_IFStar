@@ -21,5 +21,6 @@ namespace IFStar.Models
         public string dsHoraInicio { get; set; }
         public string dsHoraFim { get; set; }
         public bool flAberto { get; set; }
+        public bool flVotacaoEncerrada { get; set; }
     }
 }
