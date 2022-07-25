@@ -208,6 +208,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Conexao.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\DadosParticipanteController.cs" />
     <Compile Include="Controllers\DadosUsuarioController.cs" />
     <Compile Include="Controllers\DadosVotacaoController.cs" />
     <Compile Include="Controllers\HomeController.cs" />

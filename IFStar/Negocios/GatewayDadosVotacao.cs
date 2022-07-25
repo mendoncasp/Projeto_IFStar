@@ -633,7 +633,7 @@ namespace IFStar.Negocios
         #region Métodos
 
         #region Verificar Votacao
-        public DataTable VerificarVotacao(int ano, SqlConnection conn)
+        public static DataTable VerificarVotacao(int ano, SqlConnection conn)
         {
             DataTable dtDados = new DataTable();
 

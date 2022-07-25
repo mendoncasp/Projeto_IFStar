@@ -140,6 +140,22 @@ namespace IFStar.Models
         public string dsMusica { get; set; }
         public string dsInstEnsino { get; set; }
         public string dsTelefone { get; set; }
+
+        #region Métodos
+        #region Validar Param
+        public void ValidarParamParticipante(ParamParticipante parametro)
+        {
+            if (string.IsNullOrEmpty(parametro.dsNome))
+                throw new Exception("É Obrigatório informar o Nome do participante.");
+
+            if (string.IsNullOrEmpty(parametro.dsMusica))
+                throw new Exception("É Obrigatório informar a Música que será apresentada.");
+
+            if (string.IsNullOrEmpty(parametro.dsInstEnsino))
+                throw new Exception("É Obrigatório informar a Instituição de Ensino do participante.");
+        }
+        #endregion
+        #endregion
     }
 
     public class ParamVotacao
