@@ -48,6 +48,93 @@ namespace IFStar.Negocios
             return dsErro;
         }
 
+        public RetornoParticipanteVoto GetParticipantes()
+        {
+            RetornoParticipanteVoto retorno = new RetornoParticipanteVoto();
+            DataTable dtDados = new DataTable();
+            SqlConnection conn = new SqlConnection(conexao.connectionString);
+
+            try
+            {
+                conn.Open();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Falha ao estabelecer conexão com o Banco de Dados: " + ex.Message);
+            }
+
+            try
+            {
+                try
+                {
+                    dtDados = GatewayDadosVotacao.VerificarVotacao(DateTime.Now.Year, conn); //Primeiro consulta a votação
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw new Exception("Falha ao realizar consulta no Banco de Dados: " + ex.Message);
+                }
+
+                if (dtDados.Rows.Count == 1)
+                {
+                    bool flVotacaoAberta = Boolean.Parse(dtDados.Rows[0]["flAberto"].ToString());
+                    if (!flVotacaoAberta)
+                        throw new Exception("Votação não está disponível. Aguarde o início da votação.");
+
+                    retorno.temaVotacao = dtDados.Rows[0]["tema"].ToString();
+                }
+                else if (dtDados.Rows.Count > 1)
+                {
+                    throw new Exception("Mais de uma votação encontrada. Contate a Equipe Técnica");
+                } 
+                else
+                {
+                    throw new Exception("Nenhuma votação cadastrada");
+                }
+
+                try
+                {
+                    dtDados = ConsultarParticipantesVoto(DateTime.Now.Year.ToString(), conn);
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw new Exception("Falha ao realizar consulta no Banco de Dados [2]: " + ex.Message);
+                }
+
+                if (dtDados.Rows.Count > 0)
+                {
+                    retorno.qtdParticipantes = dtDados.Rows.Count;
+                    retorno.dadosParticipante = new List<DadosParticipante>();
+
+                    for (int i = 0; i < dtDados.Rows.Count; i++)
+                    {
+                        DadosParticipante participante = new DadosParticipante();
+                        participante.idParticipante = dtDados.Rows[i]["idParticipante"].ToString();
+                        participante.dsNome = dtDados.Rows[i]["nome"].ToString();
+                        participante.dsMusica = dtDados.Rows[i]["musica"].ToString();
+                        participante.dsInstEnsino = dtDados.Rows[i]["instEnsino"].ToString();
+
+                        retorno.dadosParticipante.Add(participante);
+                    }
+                }
+                else
+                {
+                    throw new Exception("Nenhum participante cadastrado para a votação.");
+                }
+            }
+            catch (Exception ex)
+            {
+                if (conn != null)
+                    conn.Close();
+
+                throw new Exception("Falha ao retornar dados dos Participantes: " + ex.Message);
+            }
+
+            conn.Close();
+            return retorno;
+        }
+
         #region Métodos
 
         #region Gerar Id Participante
@@ -139,6 +226,24 @@ namespace IFStar.Negocios
             }
 
             return erro;
+        }
+        #endregion
+
+        #region Consultar Participantes
+        public DataTable ConsultarParticipantesVoto(string ano, SqlConnection conn)
+        {
+            DataTable dtDados = new DataTable();
+
+            string script = "SELECT idParticipante, nome, musica, instEnsino FROM tbParticipante (NOLOCK) WHERE SUBSTRING(idParticipante, 1, 4) = @ano";
+
+            //Adicionar Parâmetros
+            SqlCommand cmd = new SqlCommand(script, conn);
+            cmd.Parameters.AddWithValue("@ano", ano);
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            da.Fill(dtDados);
+
+            return dtDados;
         }
         #endregion
 

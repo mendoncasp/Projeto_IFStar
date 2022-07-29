@@ -23,4 +23,19 @@ namespace IFStar.Models
         public bool flAberto { get; set; }
         public bool flVotacaoEncerrada { get; set; }
     }
+
+    public class DadosParticipante
+    {
+        public string idParticipante { get; set; }
+        public string dsNome { get; set; }
+        public string dsMusica { get; set; }
+        public string dsInstEnsino { get; set; }
+    }
+
+    public class RetornoParticipanteVoto
+    {
+        public string temaVotacao { get; set; }
+        public int qtdParticipantes { get; set; }
+        public List<DadosParticipante> dadosParticipante { get; set; }
+    }
 }

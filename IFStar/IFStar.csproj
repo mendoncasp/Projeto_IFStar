@@ -209,6 +209,7 @@
     <Compile Include="Conexao.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\DadosParticipanteController.cs" />
+    <Compile Include="Controllers\DadosPublicoVotacaoController.cs" />
     <Compile Include="Controllers\DadosUsuarioController.cs" />
     <Compile Include="Controllers\DadosVotacaoController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -222,6 +223,7 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Param.cs" />
     <Compile Include="Models\Participante.cs" />
+    <Compile Include="Models\PublicoVotacao.cs" />
     <Compile Include="Models\Retorno.cs" />
     <Compile Include="Models\Usuario.cs" />
     <Compile Include="Models\Votacao.cs" />
