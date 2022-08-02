@@ -38,4 +38,19 @@ namespace IFStar.Models
         public int qtdParticipantes { get; set; }
         public List<DadosParticipante> dadosParticipante { get; set; }
     }
+
+    public class Resultado
+    {
+        public string dsNome { get; set; }
+        public string dsMusica { get; set; }
+        public string dsInstEnsino { get; set; }
+        public int qtdVotos { get; set; }
+        public decimal percVoto { get; set; }
+    }
+
+    public class DadosResultado
+    {
+        public string temaVotacao { get; set; }
+        public List<Resultado> resultado { get; set; }
+    }
 }

@@ -34,6 +34,14 @@ namespace IFStar.Negocios
                 if (dtDados.Rows.Count == 0)
                     throw new Exception("Participantes só serão cadastrados após o cadastro da Votação.");
 
+                bool votacaoAberta = Boolean.Parse(dtDados.Rows[0]["flAberto"].ToString());
+                if (votacaoAberta)
+                    throw new Exception("Não podem ser cadastrados participantes com a Votação em andamento.");
+
+                bool votacaoEncerrada = Boolean.Parse(dtDados.Rows[0]["flVotacaoEncerrada"].ToString());
+                if (votacaoEncerrada)
+                    throw new Exception("Não podem ser cadastrados participantes após o encerramento da Votação.");
+
                 string idParticipante = ConsultaIdParticipante(DateTime.Now.Year.ToString(), conn);
                 dsErro = InserirParticipante(idParticipante, participante, conn);
             }
@@ -83,10 +91,6 @@ namespace IFStar.Negocios
 
                     retorno.temaVotacao = dtDados.Rows[0]["tema"].ToString();
                 }
-                else if (dtDados.Rows.Count > 1)
-                {
-                    throw new Exception("Mais de uma votação encontrada. Contate a Equipe Técnica");
-                } 
                 else
                 {
                     throw new Exception("Nenhuma votação cadastrada");
@@ -234,7 +238,7 @@ namespace IFStar.Negocios
         {
             DataTable dtDados = new DataTable();
 
-            string script = "SELECT idParticipante, nome, musica, instEnsino FROM tbParticipante (NOLOCK) WHERE SUBSTRING(idParticipante, 1, 4) = @ano";
+            string script = "SELECT idParticipante, nome, musica, instEnsino FROM tbParticipante (NOLOCK) WHERE SUBSTRING(idParticipante, 1, 4) = @ano ORDER BY nome";
 
             //Adicionar Parâmetros
             SqlCommand cmd = new SqlCommand(script, conn);

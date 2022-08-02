@@ -258,11 +258,11 @@ namespace IFStar.Negocios
                 }
                 else if (dtDados.Rows.Count > 1)
                 {
-                    throw new Exception("Mais de um usuário encontrado. Contate a equipe Técnica.");
+                    throw new Exception("Mais de um usuário encontrado. Contate a equipe Técnica [2].");
                 }
                 else
                 {
-                    throw new Exception("E-mail ou CPF incorreto!");
+                    throw new Exception("E-mail ou CPF incorreto [2]!");
                 }
             }
             catch (Exception ex)

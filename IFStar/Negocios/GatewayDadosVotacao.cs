@@ -97,10 +97,11 @@ namespace IFStar.Negocios
                     string horaFimSistema = dtDados.Rows[0]["horaFim"].ToString();
 
                     bool votacaoAberta = Boolean.Parse(dtDados.Rows[0]["flAberto"].ToString());
+                    bool votacaoEncerrada = Boolean.Parse(dtDados.Rows[0]["flVotacaoEncerrada"].ToString());
 
                     if (!votacaoAberta)
                     {
-                        if (DateTime.Now.Date > dtVotacaoSistema.Date)
+                        if (votacaoEncerrada)
                             throw new Exception("Não pode ser alterada uma Votação que foi encerrada.");
 
                         #region Alterar Tema
@@ -358,10 +359,6 @@ namespace IFStar.Negocios
                         throw new Exception("Não pode ser alterada uma Votação que está aberta.");
                     }
                 }
-                else if (dtDados.Rows.Count > 1)
-                {
-                    throw new Exception("Mais de uma votação encontrada. Contate a equipe Técnica.");
-                }
                 else
                 {
                     throw new Exception("Nenhuma votação encontrada.");
@@ -417,17 +414,17 @@ namespace IFStar.Negocios
                     retorno.flAberto = Boolean.Parse(dtDados.Rows[0]["flAberto"].ToString());
                     retorno.flVotacaoEncerrada = Boolean.Parse(dtDados.Rows[0]["flVotacaoEncerrada"].ToString());
                 }
-                else if (dtDados.Rows.Count > 1)
-                {
-                    throw new Exception("Mais de uma votação encontrada. Contate a Equipe Técnica");
-                }
+                //else
+                //{
+                //    throw new Exception("Nenhuma votação encontrada [2].");
+                //}
             }
             catch (Exception ex)
             {
                 if (conn != null)
                     conn.Close();
 
-                throw new Exception("Falha ao retornar dados da Votação: " + ex.Message);
+                throw new Exception(ex.Message);
             }
 
             conn.Close();
@@ -485,9 +482,9 @@ namespace IFStar.Negocios
                     cmd.ExecuteNonQuery();
                     #endregion
                 }
-                else if (dtDados.Rows.Count > 1)
+                else
                 {
-                    throw new Exception("Mais de uma votação encontrada. Contate a Equipe Técnica");
+                    throw new Exception("Nenhuma votação encontrada [3].");
                 }
             }
             catch (Exception ex)
@@ -549,9 +546,9 @@ namespace IFStar.Negocios
                     cmd.ExecuteNonQuery();
                     #endregion
                 }
-                else if (dtDados.Rows.Count > 1)
+                else
                 {
-                    throw new Exception("Mais de uma votação encontrada. Contate a Equipe Técnica");
+                    throw new Exception("Nenhuma votação encontrada [4].");
                 }
             }
             catch (Exception ex)
@@ -613,9 +610,9 @@ namespace IFStar.Negocios
                     cmd.ExecuteNonQuery();
                     #endregion
                 }
-                else if (dtDados.Rows.Count > 1)
+                else
                 {
-                    throw new Exception("Mais de uma votação encontrada. Contate a Equipe Técnica");
+                    throw new Exception("Nenhuma votação encontrada [5].");
                 }
             }
             catch (Exception ex)
@@ -645,6 +642,11 @@ namespace IFStar.Negocios
 
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             da.Fill(dtDados);
+
+            if (dtDados.Rows.Count > 1)
+            {
+                throw new Exception("Mais de uma votação encontrada. Contate a equipe Técnica.");
+            }
 
             return dtDados;
         }

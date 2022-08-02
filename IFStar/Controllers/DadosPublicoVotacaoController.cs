@@ -50,5 +50,37 @@ namespace IFStar.Controllers
                 return Request.CreateResponse(codigoErro, dsErro);
             }
         }
+
+        public HttpResponseMessage Get()
+        {
+            try
+            {
+                Dictionary<string, string> queryString = Request.GetQueryNameValuePairs().ToDictionary(x => x.Key, x => x.Value);
+                GatewayDadosPublicoVotacao dados = new GatewayDadosPublicoVotacao();
+                DadosResultado resultado = new DadosResultado();
+
+                string outValue = null;
+                queryString.TryGetValue("" + (int)Campos.TipoServico, out outValue);
+                int tipoServico = Int32.Parse(queryString["" + (int)Campos.TipoServico]);
+
+                if (tipoServico == 1)
+                {
+                    resultado = dados.GetResultado();
+                    return Request.CreateResponse<DadosResultado>(HttpStatusCode.OK, resultado);
+                }
+                else
+                {
+                    string mensagemErro = "Tipo de Serviço Inexistente";
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, mensagemErro);
+                }
+            }
+            catch (Exception ex)
+            {
+                HttpStatusCode codigoErro = HttpStatusCode.InternalServerError;
+                if (ex.Message.Equals("401"))
+                    codigoErro = HttpStatusCode.Unauthorized;
+                return Request.CreateResponse(codigoErro, ex.Message);
+            }
+        }
     }
 }
